@@ -32,5 +32,9 @@ export function createServer() {
   app.put("/api/trips/:tripId", updateTrip);
   app.delete("/api/trips/:tripId", deleteTrip);
 
+  // Flight search routes (Skyscanner integration)
+  app.post("/api/flights/search", searchFlights);
+  app.get("/api/flights/:flightId", getFlightDetails);
+
   return app;
 }
