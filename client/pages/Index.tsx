@@ -255,7 +255,11 @@ export default function Index() {
                     </span>
                   </div>
                 </div>
-                <Button className="w-full" size="sm">
+                <Button
+                  className="w-full"
+                  size="sm"
+                  onClick={() => navigate('/trip/trip-001')}
+                >
                   View Full Itinerary
                 </Button>
               </CardContent>
