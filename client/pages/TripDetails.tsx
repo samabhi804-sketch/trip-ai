@@ -412,60 +412,57 @@ export default function TripDetails() {
 
           {/* Bookings Tab */}
           <TabsContent value="bookings" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Hotel className="w-5 h-5" />
-                    <span>Accommodation</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold">Park Hyatt Tokyo</h4>
-                      <p className="text-sm text-muted-foreground">Deluxe Room, City View</p>
-                      <p className="text-sm text-muted-foreground">7 nights</p>
-                    </div>
-                    <Badge className="bg-green-100 text-green-800" variant="secondary">
-                      Confirmed
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <span className="text-sm text-muted-foreground">Total</span>
-                    <span className="font-semibold">$1,890</span>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tripData.bookings.map((booking) => {
+                const getBookingIcon = (type: string) => {
+                  switch (type) {
+                    case 'hotel': return Hotel;
+                    case 'activity': return Camera;
+                    case 'restaurant': return Utensils;
+                    case 'transport': return Plane;
+                    default: return Hotel;
+                  }
+                };
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Camera className="w-5 h-5" />
-                    <span>Activities</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Tokyo City Tour</span>
-                      <Badge className="bg-green-100 text-green-800" variant="secondary">Booked</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Mount Fuji Day Trip</span>
-                      <Badge className="bg-green-100 text-green-800" variant="secondary">Booked</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Shibuya Experience</span>
-                      <Badge className="bg-yellow-100 text-yellow-800" variant="secondary">Pending</Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <span className="text-sm text-muted-foreground">Total</span>
-                    <span className="font-semibold">$355</span>
-                  </div>
-                </CardContent>
-              </Card>
+                const BookingIcon = getBookingIcon(booking.type);
+
+                return (
+                  <Card key={booking.id}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <BookingIcon className="w-5 h-5" />
+                        <span>{booking.type.charAt(0).toUpperCase() + booking.type.slice(1)}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-semibold">{booking.title}</h4>
+                          <p className="text-sm text-muted-foreground">{booking.description}</p>
+                          <p className="text-sm text-muted-foreground">{booking.date}</p>
+                        </div>
+                        <Badge className={getStatusColor(booking.status)} variant="secondary">
+                          {booking.status}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between pt-4 border-t">
+                        <span className="text-sm text-muted-foreground">Price</span>
+                        <span className="font-semibold">${booking.price}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+
+              {tripData.bookings.length === 0 && (
+                <Card className="col-span-full">
+                  <CardContent className="text-center py-8">
+                    <Camera className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Bookings Yet</h3>
+                    <p className="text-muted-foreground">Your bookings will appear here once you start planning your trip.</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
         </Tabs>
