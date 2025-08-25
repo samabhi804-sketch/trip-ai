@@ -20,5 +20,8 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // AI Agent routes
+  app.post("/api/chat", handleChatWithAgent);
+
   return app;
 }
