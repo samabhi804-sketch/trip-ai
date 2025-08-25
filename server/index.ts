@@ -24,5 +24,12 @@ export function createServer() {
   // AI Agent routes
   app.post("/api/chat", handleChatWithAgent);
 
+  // Trip management routes
+  app.get("/api/trips", getAllTrips);
+  app.get("/api/trips/:tripId", getTripById);
+  app.post("/api/trips", createTrip);
+  app.put("/api/trips/:tripId", updateTrip);
+  app.delete("/api/trips/:tripId", deleteTrip);
+
   return app;
 }
