@@ -67,19 +67,67 @@ interface ItineraryDay {
 
 export default function TripDetails() {
   const navigate = useNavigate();
-  
-  const [tripData] = useState({
-    id: 'trip-001',
-    title: 'Amazing Tokyo Adventure',
-    destination: 'Tokyo, Japan',
-    dates: 'March 15-22, 2024',
-    duration: '7 days',
-    travelers: 2,
-    budget: 3500,
-    spent: 2800,
-    status: 'confirmed',
-    bookingProgress: 85
-  });
+  const { tripId } = useParams<{ tripId: string }>();
+
+  const [tripData, setTripData] = useState<Trip | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTripData = async () => {
+      try {
+        if (!tripId) {
+          setError('Trip ID not provided');
+          return;
+        }
+
+        const response = await fetch(`/api/trips/${tripId}`);
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Trip not found');
+          } else {
+            setError('Failed to load trip data');
+          }
+          return;
+        }
+
+        const trip: Trip = await response.json();
+        setTripData(trip);
+      } catch (err) {
+        console.error('Error fetching trip:', err);
+        setError('Failed to load trip data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTripData();
+  }, [tripId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50 to-emerald-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading trip details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !tripData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50 to-emerald-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Trip Not Found</h1>
+          <p className="text-muted-foreground mb-6">{error || 'The requested trip could not be found.'}</p>
+          <Button onClick={() => navigate('/')}>
+            Return to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const flights: FlightDetails[] = [
     {
