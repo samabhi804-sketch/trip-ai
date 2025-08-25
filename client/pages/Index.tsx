@@ -178,23 +178,98 @@ export default function Index() {
     setInputMessage("");
     setIsTyping(true);
 
-    // Generate contextual AI response
-    setTimeout(() => {
-      const responseContent = generateAgentResponse(userInput, selectedAgent, conversationStep);
+    try {
+      // Prepare conversation history for API
+      const conversationHistory = messages.map(msg => ({
+        sender: msg.sender,
+        content: msg.content,
+        timestamp: msg.timestamp.toISOString()
+      }));
 
+      const chatRequest: ChatRequest = {
+        message: userInput,
+        agentType: selectedAgent as any,
+        conversationHistory,
+        tripData: {
+          destination: currentTrip.destination,
+          dates: currentTrip.dates,
+          budget: currentTrip.budget,
+          travelers: currentTrip.travelers
+        }
+      };
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(chatRequest)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response from AI agent');
+      }
+
+      const chatResponse: ChatResponse = await response.json();
+
+      // Update trip data if the AI extracted new information
+      if (chatResponse.tripUpdates) {
+        setCurrentTrip(prev => ({
+          ...prev,
+          ...chatResponse.tripUpdates
+        }));
+      }
+
+      // Create agent response message
       const agentResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: responseContent,
+        content: chatResponse.response,
+        sender: 'agent',
+        agentType: chatResponse.agentType,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, agentResponse]);
+
+      // Update agent statuses and suggest next agent if needed
+      updateAgentStatuses();
+
+      if (chatResponse.suggestedNextAgent && chatResponse.suggestedNextAgent !== selectedAgent) {
+        // Optionally auto-switch to suggested agent or show a suggestion
+        setTimeout(() => {
+          const suggestionMessage: Message = {
+            id: `suggestion-${Date.now()}`,
+            content: `💡 Tip: You might want to talk with the ${getAgentName(chatResponse.suggestedNextAgent!)} for the next step of your planning.`,
+            sender: 'agent',
+            agentType: 'destination', // neutral
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, suggestionMessage]);
+        }, 1000);
+      }
+
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+
+      // Fallback to local response
+      const fallbackResponse = generateAgentResponse(userInput, selectedAgent, conversationStep);
+      const agentResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: fallbackResponse,
         sender: 'agent',
         agentType: selectedAgent as any,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, agentResponse]);
-      setIsTyping(false);
-
-      // Update agent statuses based on conversation progress
       updateAgentStatuses();
-    }, 1500 + Math.random() * 1000); // Vary response time
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const getAgentName = (agentType: string) => {
+    const agent = agents.find(a => a.id === agentType);
+    return agent ? agent.name : 'AI Agent';
   };
 
   const updateAgentStatuses = () => {
