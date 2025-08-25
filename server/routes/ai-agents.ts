@@ -1,4 +1,6 @@
 import { RequestHandler } from "express";
+import { searchFlights } from "./flights";
+import { FlightSearchRequest } from "./flights";
 
 export interface ChatRequest {
   message: string;
