@@ -156,7 +156,13 @@ export default function Index() {
               </div>
             </div>
             <nav className="flex items-center space-x-6">
-              <Button variant="ghost" size="sm">My Trips</Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/trip/trip-001')}
+              >
+                My Trips
+              </Button>
               <Button variant="ghost" size="sm">Explore</Button>
               <Button size="sm">Sign In</Button>
             </nav>
