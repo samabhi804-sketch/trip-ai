@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleChatWithAgent } from "./routes/ai-agents";
+import { getTripById, getAllTrips, createTrip, updateTrip, deleteTrip } from "./routes/trips";
 
 export function createServer() {
   const app = express();
