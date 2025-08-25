@@ -129,136 +129,19 @@ export default function TripDetails() {
     );
   }
 
-  const flights: FlightDetails[] = [
-    {
-      id: 'flight-1',
-      airline: 'Japan Airlines',
-      flightNumber: 'JL 012',
-      departure: {
-        airport: 'LAX',
-        city: 'Los Angeles',
-        time: '11:30 AM',
-        date: 'Mar 15'
-      },
-      arrival: {
-        airport: 'NRT',
-        city: 'Tokyo',
-        time: '3:45 PM',
-        date: 'Mar 16'
-      },
-      duration: '11h 15m',
-      price: 850,
-      status: 'booked'
-    },
-    {
-      id: 'flight-2',
-      airline: 'Japan Airlines',
-      flightNumber: 'JL 013',
-      departure: {
-        airport: 'NRT',
-        city: 'Tokyo',
-        time: '6:20 PM',
-        date: 'Mar 22'
-      },
-      arrival: {
-        airport: 'LAX',
-        city: 'Los Angeles',
-        time: '11:15 AM',
-        date: 'Mar 22'
-      },
-      duration: '9h 55m',
-      price: 850,
-      status: 'booked'
-    }
-  ];
+  // Use data from API
+  const flights = tripData.flights;
+  const itinerary = tripData.itinerary;
 
-  const itinerary: ItineraryDay[] = [
-    {
-      day: 1,
-      date: 'March 16, 2024',
-      activities: [
-        {
-          id: '1-1',
-          time: '3:45 PM',
-          title: 'Arrive at Tokyo Narita',
-          description: 'Flight JL 012 arrival',
-          location: 'Narita International Airport',
-          type: 'flight',
-          icon: Plane,
-          status: 'upcoming'
-        },
-        {
-          id: '1-2',
-          time: '6:00 PM',
-          title: 'Check-in at Hotel',
-          description: 'Park Hyatt Tokyo',
-          location: 'Shinjuku, Tokyo',
-          type: 'hotel',
-          icon: Hotel,
-          status: 'booked'
-        },
-        {
-          id: '1-3',
-          time: '8:00 PM',
-          title: 'Welcome Dinner',
-          description: 'Traditional kaiseki at Kikunoi',
-          location: 'Higashiyama, Kyoto',
-          type: 'restaurant',
-          icon: Utensils,
-          duration: '2 hours',
-          price: 120,
-          status: 'booked'
-        }
-      ]
-    },
-    {
-      day: 2,
-      date: 'March 17, 2024',
-      activities: [
-        {
-          id: '2-1',
-          time: '9:00 AM',
-          title: 'Tokyo City Tour',
-          description: 'Guided tour of Senso-ji Temple, Tokyo Skytree',
-          location: 'Asakusa & Sumida',
-          type: 'activity',
-          icon: Camera,
-          duration: '6 hours',
-          price: 85,
-          status: 'booked'
-        },
-        {
-          id: '2-2',
-          time: '7:00 PM',
-          title: 'Shibuya Crossing Experience',
-          description: 'Experience the world\'s busiest intersection',
-          location: 'Shibuya, Tokyo',
-          type: 'activity',
-          icon: Navigation,
-          duration: '2 hours',
-          status: 'upcoming'
-        }
-      ]
-    },
-    {
-      day: 3,
-      date: 'March 18, 2024',
-      activities: [
-        {
-          id: '3-1',
-          time: '8:30 AM',
-          title: 'Day Trip to Mount Fuji',
-          description: 'Full day tour including Lake Kawaguchi',
-          location: 'Mount Fuji, Japan',
-          type: 'activity',
-          icon: Camera,
-          duration: '10 hours',
-          price: 150,
-          status: 'booked'
-        }
-      ]
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'flight': return Plane;
+      case 'hotel': return Hotel;
+      case 'restaurant': return Utensils;
+      case 'activity': return Camera;
+      default: return Navigation;
     }
-  ];
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
