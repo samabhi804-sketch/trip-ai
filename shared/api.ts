@@ -42,3 +42,88 @@ export interface ChatResponse {
   suggestedNextAgent?: 'destination' | 'itinerary' | 'booking';
   confidence: number;
 }
+
+/**
+ * Trip Management API types
+ */
+export interface Trip {
+  id: string;
+  title: string;
+  destination: string;
+  dates: string;
+  duration: string;
+  travelers: number;
+  budget: number;
+  spent: number;
+  status: 'planning' | 'confirmed' | 'completed' | 'cancelled';
+  bookingProgress: number;
+  createdAt: string;
+  updatedAt: string;
+  itinerary: ItineraryDay[];
+  flights: Flight[];
+  bookings: Booking[];
+}
+
+export interface ItineraryDay {
+  day: number;
+  date: string;
+  activities: Activity[];
+}
+
+export interface Activity {
+  id: string;
+  time: string;
+  title: string;
+  description: string;
+  location: string;
+  type: 'flight' | 'hotel' | 'activity' | 'restaurant';
+  duration?: string;
+  price?: number;
+  status: 'completed' | 'upcoming' | 'booked' | 'cancelled';
+}
+
+export interface Flight {
+  id: string;
+  airline: string;
+  flightNumber: string;
+  departure: {
+    airport: string;
+    city: string;
+    time: string;
+    date: string;
+  };
+  arrival: {
+    airport: string;
+    city: string;
+    time: string;
+    date: string;
+  };
+  duration: string;
+  price: number;
+  status: 'booked' | 'pending' | 'cancelled';
+}
+
+export interface Booking {
+  id: string;
+  type: 'hotel' | 'activity' | 'restaurant' | 'transport';
+  title: string;
+  description: string;
+  price: number;
+  status: 'confirmed' | 'pending' | 'cancelled';
+  date: string;
+}
+
+export interface TripSummary {
+  id: string;
+  title: string;
+  destination: string;
+  dates: string;
+  duration: string;
+  travelers: number;
+  budget: number;
+  spent: number;
+  status: 'planning' | 'confirmed' | 'completed' | 'cancelled';
+  bookingProgress: number;
+  createdAt: string;
+  updatedAt: string;
+}
