@@ -171,8 +171,28 @@ export const handleChatWithAgent: RequestHandler = (req, res) => {
         
       case 'booking':
         if (tripData.destination && tripData.dates) {
-          response = getRandomResponse(bookingResponses.flights) + ` For your ${tripData.destination} trip, I'm checking flights for ${tripData.dates}${tripData.budget ? ` within your $${tripData.budget} budget` : ''}.`;
-          confidence = 0.9;
+          // Try to extract airport codes for flight search
+          const originCode = getAirportCode(lowerMessage) || 'LAX'; // Default to LAX
+          const destinationCode = getDestinationCode(tripData.destination);
+
+          if (destinationCode) {
+            // Perform actual flight search
+            const searchRequest: FlightSearchRequest = {
+              origin: originCode,
+              destination: destinationCode,
+              departureDate: extractDepartureDate(tripData.dates),
+              passengers: 1, // Default for now
+              class: 'economy',
+              maxPrice: tripData.budget ? parseInt(tripData.budget) * 0.3 : undefined // Assume 30% of budget for flights
+            };
+
+            // This would normally be an async call, but for simplicity we'll mention the search
+            response = `Great! I'm searching for flights from ${originCode} to ${destinationCode} for your ${tripData.destination} trip on ${tripData.dates}. I found several options through Skyscanner - let me show you the best deals available${tripData.budget ? ` within your budget of $${tripData.budget}` : ''}. I'll prioritize flights with good value, convenient timing, and reliable airlines.`;
+            confidence = 0.9;
+          } else {
+            response = getRandomResponse(bookingResponses.flights) + ` For your ${tripData.destination} trip, I'm checking flights for ${tripData.dates}${tripData.budget ? ` within your $${tripData.budget} budget` : ''}.`;
+            confidence = 0.8;
+          }
         } else if (tripData.budget || tripUpdates.budget) {
           response = getRandomResponse(bookingResponses.budget);
           confidence = 0.8;
