@@ -43,6 +43,7 @@ interface Agent {
 }
 
 export default function Index() {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
