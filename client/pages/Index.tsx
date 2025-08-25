@@ -54,7 +54,7 @@ export default function Index() {
     }
   ]);
   const [inputMessage, setInputMessage] = useState("");
-  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<string>('destination');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentTrip, setCurrentTrip] = useState({
@@ -64,8 +64,9 @@ export default function Index() {
     travelers: 1,
     status: "planning"
   });
+  const [conversationStep, setConversationStep] = useState<'greeting' | 'destination' | 'dates' | 'budget' | 'planning' | 'booking'>('greeting');
 
-  const agents: Agent[] = [
+  const [agents, setAgents] = useState<Agent[]>([
     {
       id: 'destination',
       name: 'Destination Research Agent',
@@ -93,7 +94,7 @@ export default function Index() {
       status: 'idle',
       color: 'text-emerald-600'
     }
-  ];
+  ]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -102,6 +103,64 @@ export default function Index() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const generateAgentResponse = (userMessage: string, agentType: string, step: string) => {
+    const lowerMessage = userMessage.toLowerCase();
+
+    switch (agentType) {
+      case 'destination':
+        if (step === 'greeting' || step === 'destination') {
+          if (lowerMessage.includes('tokyo') || lowerMessage.includes('japan')) {
+            setCurrentTrip(prev => ({ ...prev, destination: 'Tokyo, Japan' }));
+            setConversationStep('dates');
+            return "Excellent choice! Tokyo is an amazing destination with incredible culture, food, and experiences. When would you like to travel? Please share your preferred dates.";
+          } else if (lowerMessage.includes('paris') || lowerMessage.includes('france')) {
+            setCurrentTrip(prev => ({ ...prev, destination: 'Paris, France' }));
+            setConversationStep('dates');
+            return "Magnifique! Paris is the city of lights and romance. Perfect for an unforgettable trip. When are you planning to visit?";
+          } else if (lowerMessage.includes('new york') || lowerMessage.includes('nyc')) {
+            setCurrentTrip(prev => ({ ...prev, destination: 'New York, USA' }));
+            setConversationStep('dates');
+            return "The Big Apple! New York offers endless possibilities - Broadway shows, world-class museums, amazing food. What dates work for you?";
+          } else {
+            return "I'd love to help you find the perfect destination! Could you tell me what type of experience you're looking for? Beach relaxation, city exploration, cultural immersion, or adventure?";
+          }
+        }
+        break;
+
+      case 'itinerary':
+        if (currentTrip.destination && currentTrip.dates) {
+          setConversationStep('planning');
+          return `Perfect! I'm creating a detailed itinerary for your ${currentTrip.destination} trip from ${currentTrip.dates}. I'll include must-see attractions, local restaurants, and cultural experiences. This will take a moment...`;
+        }
+        return "I need your destination and dates first to create a personalized itinerary. Let me connect you with our Destination Agent.";
+
+      case 'booking':
+        if (currentTrip.destination && currentTrip.dates && currentTrip.budget) {
+          setConversationStep('booking');
+          return `Great! I'm searching for the best flights to ${currentTrip.destination} within your budget of $${currentTrip.budget}. I'll check multiple airlines and find you the best deals through Skyscanner.`;
+        }
+        return "I need your destination, dates, and budget to find the best flight options. Let me help you complete your trip details first.";
+    }
+
+    // Handle date and budget inputs
+    if (step === 'dates' && (lowerMessage.includes('march') || lowerMessage.includes('april') || lowerMessage.includes('may') || /\d/.test(lowerMessage))) {
+      setCurrentTrip(prev => ({ ...prev, dates: userMessage }));
+      setConversationStep('budget');
+      return "Perfect! I've noted your travel dates. What's your approximate budget for this trip? This helps me find the best options for flights and accommodations.";
+    }
+
+    if (step === 'budget' && (/\$?\d+/.test(lowerMessage) || lowerMessage.includes('budget'))) {
+      const budget = lowerMessage.match(/\$?(\d+)/)?.[1];
+      if (budget) {
+        setCurrentTrip(prev => ({ ...prev, budget: budget }));
+        setConversationStep('planning');
+        return `Excellent! With a budget of $${budget}, I can find great options for your ${currentTrip.destination} trip. Let me now connect you with our Itinerary Planning Agent to create your detailed travel plan.`;
+      }
+    }
+
+    return "I'm here to help with your travel planning! Could you provide more specific details about what you're looking for?";
+  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -114,21 +173,48 @@ export default function Index() {
     };
 
     setMessages(prev => [...prev, newMessage]);
+    const userInput = inputMessage;
     setInputMessage("");
     setIsTyping(true);
 
-    // Simulate AI response
+    // Generate contextual AI response
     setTimeout(() => {
+      const responseContent = generateAgentResponse(userInput, selectedAgent, conversationStep);
+
       const agentResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: "Great choice! I'm analyzing the best destinations for you. Let me check current flight prices and create some amazing itinerary options. This might take a moment...",
+        content: responseContent,
         sender: 'agent',
-        agentType: selectedAgent as any || 'destination',
+        agentType: selectedAgent as any,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, agentResponse]);
       setIsTyping(false);
-    }, 2000);
+
+      // Update agent statuses based on conversation progress
+      updateAgentStatuses();
+    }, 1500 + Math.random() * 1000); // Vary response time
+  };
+
+  const updateAgentStatuses = () => {
+    setAgents(prev => prev.map(agent => {
+      if (agent.id === selectedAgent) {
+        return { ...agent, status: 'working' };
+      }
+
+      // Update statuses based on trip progress
+      if (agent.id === 'destination' && currentTrip.destination) {
+        return { ...agent, status: 'completed' };
+      }
+      if (agent.id === 'itinerary' && currentTrip.destination && currentTrip.dates) {
+        return { ...agent, status: 'working' };
+      }
+      if (agent.id === 'booking' && currentTrip.destination && currentTrip.dates && currentTrip.budget) {
+        return { ...agent, status: 'working' };
+      }
+
+      return agent;
+    }));
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
