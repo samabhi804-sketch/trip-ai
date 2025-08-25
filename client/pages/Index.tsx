@@ -269,12 +269,23 @@ export default function Index() {
               {agents.map((agent) => {
                 const IconComponent = agent.icon;
                 return (
-                  <Card 
-                    key={agent.id} 
+                  <Card
+                    key={agent.id}
                     className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                      selectedAgent === agent.id ? 'ring-2 ring-primary border-primary' : ''
+                      selectedAgent === agent.id ? 'ring-2 ring-primary border-primary bg-primary/5' : ''
                     }`}
-                    onClick={() => setSelectedAgent(agent.id)}
+                    onClick={() => {
+                      setSelectedAgent(agent.id);
+                      // Add a message when switching agents
+                      const agentSwitchMessage: Message = {
+                        id: `switch-${Date.now()}`,
+                        content: `You're now chatting with the ${agent.name}. ${agent.description}`,
+                        sender: 'agent',
+                        agentType: agent.type,
+                        timestamp: new Date()
+                      };
+                      setMessages(prev => [...prev, agentSwitchMessage]);
+                    }}
                   >
                     <CardHeader className="pb-3">
                       <div className="flex items-center space-x-3">
