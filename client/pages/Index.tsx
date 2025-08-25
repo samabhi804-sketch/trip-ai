@@ -326,6 +326,13 @@ export default function Index() {
                 My Trips
               </Button>
               <Button variant="ghost" size="sm">Explore</Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/create-trip')}
+              >
+                Create Trip
+              </Button>
               <Button size="sm">Sign In</Button>
             </nav>
           </div>
