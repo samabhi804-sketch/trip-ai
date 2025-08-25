@@ -109,6 +109,73 @@ function getRandomResponse(responses: string[]): string {
   return responses[Math.floor(Math.random() * responses.length)];
 }
 
+function getAirportCode(message: string): string | null {
+  const airportMappings: Record<string, string> = {
+    'los angeles': 'LAX',
+    'la': 'LAX',
+    'lax': 'LAX',
+    'new york': 'JFK',
+    'nyc': 'JFK',
+    'jfk': 'JFK',
+    'chicago': 'ORD',
+    'miami': 'MIA',
+    'san francisco': 'SFO',
+    'seattle': 'SEA',
+    'boston': 'BOS',
+    'washington': 'DCA',
+    'atlanta': 'ATL'
+  };
+
+  for (const [city, code] of Object.entries(airportMappings)) {
+    if (message.includes(city)) {
+      return code;
+    }
+  }
+  return null;
+}
+
+function getDestinationCode(destination: string): string | null {
+  const destinationMappings: Record<string, string> = {
+    'tokyo': 'NRT',
+    'japan': 'NRT',
+    'paris': 'CDG',
+    'france': 'CDG',
+    'london': 'LHR',
+    'uk': 'LHR',
+    'united kingdom': 'LHR',
+    'new york': 'JFK',
+    'nyc': 'JFK',
+    'los angeles': 'LAX',
+    'singapore': 'SIN',
+    'dubai': 'DXB',
+    'hong kong': 'HKG',
+    'amsterdam': 'AMS',
+    'germany': 'FRA',
+    'frankfurt': 'FRA',
+    'madrid': 'MAD',
+    'spain': 'MAD',
+    'rome': 'FCO',
+    'italy': 'FCO'
+  };
+
+  const lowerDest = destination.toLowerCase();
+  for (const [city, code] of Object.entries(destinationMappings)) {
+    if (lowerDest.includes(city)) {
+      return code;
+    }
+  }
+  return null;
+}
+
+function extractDepartureDate(dates: string): string {
+  // Extract the first date from a date range like "March 15-22, 2024"
+  const dateMatch = dates.match(/(\w+\s+\d{1,2})/);
+  if (dateMatch) {
+    return dateMatch[1];
+  }
+  return dates.split('-')[0] || dates;
+}
+
 export const handleChatWithAgent: RequestHandler = (req, res) => {
   try {
     const { message, agentType, conversationHistory, tripData }: ChatRequest = req.body;
