@@ -306,7 +306,7 @@ export default function TripDetails() {
                 <CardContent>
                   <div className="space-y-4">
                     {day.activities.map((activity, index) => {
-                      const IconComponent = activity.icon;
+                      const IconComponent = getActivityIcon(activity.type);
                       return (
                         <div key={activity.id} className="flex items-start space-x-4 pb-4 border-b last:border-b-0">
                           <div className="flex-shrink-0">
