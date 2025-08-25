@@ -127,3 +127,75 @@ export interface TripSummary {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * Flight Search API types (Skyscanner Integration)
+ */
+export interface FlightSearchRequest {
+  origin: string;
+  destination: string;
+  departureDate: string;
+  returnDate?: string;
+  passengers: number;
+  class: 'economy' | 'business' | 'first';
+  maxPrice?: number;
+}
+
+export interface FlightSearchResponse {
+  flights: FlightResult[];
+  searchMeta: {
+    origin: string;
+    destination: string;
+    departureDate: string;
+    returnDate?: string;
+    passengers: number;
+    searchTime: string;
+    totalResults: number;
+  };
+}
+
+export interface FlightResult {
+  id: string;
+  airline: string;
+  flightNumber: string;
+  aircraft: string;
+  departure: {
+    airport: string;
+    iata: string;
+    city: string;
+    country: string;
+    time: string;
+    date: string;
+    terminal?: string;
+  };
+  arrival: {
+    airport: string;
+    iata: string;
+    city: string;
+    country: string;
+    time: string;
+    date: string;
+    terminal?: string;
+  };
+  duration: string;
+  stops: number;
+  price: {
+    total: number;
+    currency: string;
+    breakdown: {
+      base: number;
+      taxes: number;
+      fees: number;
+    };
+  };
+  class: string;
+  amenities: string[];
+  bookingLink: string;
+  provider: string;
+  carbonEmission: number;
+  deals?: {
+    type: 'priceAlert' | 'lastMinute' | 'earlyBird';
+    message: string;
+    savings: number;
+  };
+}
