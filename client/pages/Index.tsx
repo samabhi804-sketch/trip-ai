@@ -339,23 +339,38 @@ export default function Index() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <MapPin className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {currentTrip.destination || "Destination: Not selected"}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      <span className={`text-sm ${currentTrip.destination ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+                        {currentTrip.destination || "Destination: Not selected"}
+                      </span>
+                    </div>
+                    {currentTrip.destination && (
+                      <Badge variant="secondary" className="text-xs">Set</Badge>
+                    )}
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {currentTrip.dates || "Dates: Not selected"}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      <span className={`text-sm ${currentTrip.dates ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+                        {currentTrip.dates || "Dates: Not selected"}
+                      </span>
+                    </div>
+                    {currentTrip.dates && (
+                      <Badge variant="secondary" className="text-xs">Set</Badge>
+                    )}
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <DollarSign className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">
-                      {currentTrip.budget || "Budget: Not set"}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <DollarSign className="w-4 h-4 text-muted-foreground" />
+                      <span className={`text-sm ${currentTrip.budget ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+                        {currentTrip.budget ? `Budget: $${currentTrip.budget}` : "Budget: Not set"}
+                      </span>
+                    </div>
+                    {currentTrip.budget && (
+                      <Badge variant="secondary" className="text-xs">Set</Badge>
+                    )}
                   </div>
                 </div>
                 <Button
