@@ -325,7 +325,13 @@ export default function Index() {
               >
                 My Trips
               </Button>
-              <Button variant="ghost" size="sm">Explore</Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/flights')}
+              >
+                Search Flights
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
