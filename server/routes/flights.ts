@@ -93,6 +93,7 @@ function generateMockFlights(
   destination: string, 
   departureDate: string,
   passengers: number,
+  flightClass: string = 'economy',
   maxPrice?: number
 ): FlightResult[] {
   const flights: FlightResult[] = [];
@@ -199,7 +200,7 @@ function generateMockFlights(
       },
       class: 'Economy',
       amenities: flightAmenities,
-      bookingLink: `https://skyscanner.com/booking/${flightNumber.replace(' ', '-')}`,
+      bookingLink: `https://www.skyscanner.com/transport/flights/${origin.toLowerCase()}/${destination.toLowerCase()}/${departureDate.replace(/-/g, '')}/?adults=${passengers}&cabinclass=${flightClass}&ref=external`,
       provider: 'Skyscanner',
       carbonEmission: Math.floor(totalMinutes * 0.12 + Math.random() * 50), // Mock carbon calculation
       deals
@@ -371,7 +372,7 @@ export const searchFlights: RequestHandler = async (req, res) => {
     const delay = Math.floor(Math.random() * 1500) + 500; // 0.5-2 seconds
     await new Promise(resolve => setTimeout(resolve, delay));
 
-    const flights = generateMockFlights(origin, destination, departureDate, passengers, maxPrice);
+    const flights = generateMockFlights(origin, destination, departureDate, passengers, flightClass, maxPrice);
 
     const response: FlightSearchResponse = {
       flights,
@@ -403,7 +404,7 @@ export const getFlightDetails: RequestHandler = async (req, res) => {
 
     // In a real implementation, this would fetch from a database
     // For now, we'll generate a mock flight with the given ID
-    const mockFlight = generateMockFlights('LAX', 'NRT', '2024-03-15', 1)[0];
+    const mockFlight = generateMockFlights('LAX', 'NRT', '2024-03-15', 1, 'economy')[0];
     mockFlight.id = flightId;
 
     res.json(mockFlight);
